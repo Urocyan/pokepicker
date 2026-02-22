@@ -1,7 +1,8 @@
 import { Controller, Get, Req, Res } from "routing-controllers";
 import { Request, Response } from "express";
-import 'reflect-metadata';
+import { Service } from "typedi";
 
+@Service()
 @Controller("/health")
 export class HealthController {
     @Get()

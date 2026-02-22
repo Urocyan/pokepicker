@@ -5,11 +5,12 @@ services:
       - "8080:3000"
     environment:
       - PORT=3000
-    depends_on:
-      - mysql
-  mysql:
-    image: mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-    volumes:
-      - C:\Users\tanne\OneDrive\Documents\volumes\pokepicker:/var/lib/mysql
+      - POKEAPI_URL_GQL=https://graphql.pokeapi.co/v1beta2
+    # depends_on:
+    #   - mysql
+  # mysql:
+  #   image: mysql
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=password
+  #   volumes:
+  #     - C:\Users\tanne\OneDrive\Documents\volumes\pokepicker:/var/lib/mysql
