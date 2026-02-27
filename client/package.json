@@ -1,0 +1,25 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild src/app.tsx --bundle --outfile=dist/bundle.js --platform=browser --format=iife --sourcemap",
+    "dev": "esbuild src/app.tsx --bundle --outfile=dist/bundle.js --platform=browser --format=iife --sourcemap --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bootstrap": "^5.3.8",
+    "esbuild": "^0.27.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  }
+}
