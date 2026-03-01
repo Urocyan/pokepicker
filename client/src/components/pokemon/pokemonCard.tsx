@@ -1,5 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 import axios from "axios";
+import { PokemonType } from "./pokemonType";
+import { PokemonTypes } from "types/pokemon_types";
 
 interface PokemonCardProps extends PropsWithChildren {
     id: number;
@@ -9,7 +11,7 @@ interface Pokemon {
     name: string,
     pokemontypes: {
       type: {
-        name: string
+        name: PokemonTypes
       },
       slot: number
     }[],
@@ -53,8 +55,8 @@ const PokemonCardContent = ({ pokemon }: { pokemon: Pokemon | null }) => {
         <div className="card-body">
             <h5 className="card-title">{pokemon.name}</h5>
             {
-                pokemon.pokemontypes.map((pokemonType) => (
-                    <span key={pokemonType.slot} className="badge bg-primary me-1">{pokemonType.type.name}</span>
+                pokemon.pokemontypes.map((pokemonType, index) => (
+                    <PokemonType key={`${pokemon.name}-type-${index}`} type={pokemonType.type.name} />
                 ))
             }
         </div>
@@ -78,7 +80,7 @@ export default ({ id }: PokemonCardProps) => {
     }, [id]);
 
     return(
-        <div className="card">
+        <div className="card text-white bg-dark border-light mb-3">
             { loading ? <Spinner /> : <PokemonCardContent pokemon={pokemon} /> }
         </div>
     );

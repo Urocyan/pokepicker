@@ -8,13 +8,7 @@ export const searchPokemonByNameQuery = gql`
             }
         }) {
             name,
-            id,
-            pokemontypes {
-                slot,
-                type {
-                    name
-                }
-            }
+            id
         }
     }
 `;
@@ -29,7 +23,15 @@ export const getPokemonByIdQuery = gql`
             name,
             pokemontypes {
                 type {
-                    name
+                    name,
+                    id,
+                    type_efficacies: typeefficacies {
+                        target_type: TypeByTargetTypeId {
+                            id,
+                            name
+                        },
+                        damage_factor
+                    }
                 },
                 slot
             }

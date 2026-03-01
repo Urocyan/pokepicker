@@ -1,9 +1,10 @@
 import { ApolloClient, DocumentNode, HttpLink, InMemoryCache } from "@apollo/client";
 import { Inject, Service } from "typedi";
 import { getPokemonByIdQuery, searchPokemonByNameQuery } from "./queries/pokemon";
-import { GetPokemonByIdResponse, PokemonResponse, SearchPokemonByNameResponse } from "./responses/pokemon";
+import { GetPokemonByIdResponse, PokemonResponse } from "./responses/pokemon";
 import { getPokemonTypesQuery } from "./queries/pokemonTypes";
 import { GetPokemonTypesQueryResponse } from "./responses/pokemonTypes";
+import { PokemonBase } from "types/pokemon";
 
 @Service()
 export class PokeApi {
@@ -25,8 +26,6 @@ export class PokeApi {
                 ...queryOptions
             });
 
-            console.log(JSON.stringify(gqlResponse.data));
-
             if(gqlResponse.data) return gqlResponse.data;
 
             throw new Error(gqlResponse.error?.message);
@@ -38,7 +37,7 @@ export class PokeApi {
     }
 
     async searchPokemon(query: string) {
-        return this._makeGqlQuery<PokemonResponse<SearchPokemonByNameResponse>>(searchPokemonByNameQuery, {
+        return this._makeGqlQuery<PokemonResponse<PokemonBase>>(searchPokemonByNameQuery, {
             variables: {
                 name: `%${query}%`
             }

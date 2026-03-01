@@ -1,20 +1,9 @@
-export interface SearchPokemonByNameResponse {
-    name: string;
-    id: number,
-    pokemonTypes: {
-        slot: number,
-        type: {
-            name: string
-        }
-    }[]
-};
+import { PokemonType, TypeEfficacy } from 'types/pokemon_types';
 
 export interface GetPokemonByIdResponse {
     name: string,
     pokemontypes: {
-      type: {
-        name: string
-      },
+      type: PokemonType & { type_efficacies: TypeEfficacy[] },
       slot: number
     }[],
     pokemonsprites: {

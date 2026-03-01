@@ -1,13 +1,16 @@
 # stage 1 – build client assets
 FROM node:24-slim AS client-build
+COPY types ./types
+COPY client/package*.json /client/
 WORKDIR /client
-COPY client/package*.json . 
 RUN npm ci
-COPY client/ .
+COPY client/src ./src
+COPY client/tsconfig.json ./
 RUN npm run build
 
 # stage 2 – build/run server
 FROM node:24-slim
+COPY types ./types
 WORKDIR /app
 COPY server/public ./public
 COPY server/package*.json ./
