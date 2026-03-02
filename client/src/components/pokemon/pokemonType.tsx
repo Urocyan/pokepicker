@@ -1,3 +1,5 @@
+import { Theme } from "@mui/material";
+import { Chip, SxProps } from "@mui/material";
 import { PokemonTypes } from "types/pokemon_types";
 
 const typeColors: Record<PokemonTypes, string> = {
@@ -21,6 +23,4 @@ const typeColors: Record<PokemonTypes, string> = {
     [PokemonTypes.Fairy]: "#e9e"
 }
 
-export const PokemonType: React.FC<{ type: PokemonTypes }> = ({ type }) => {
-    return <span className="badge" style={{ backgroundColor: typeColors[type] }}>{type}</span>;
-}
+export const PokemonType: React.FC<{ type: PokemonTypes, sx?: SxProps<Theme> }> = ({ type, sx }) => <Chip sx={{ backgroundColor: typeColors[type], color: 'whitesmoke', ...sx }} label={type} />;

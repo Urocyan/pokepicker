@@ -1,27 +1,18 @@
-import axios from "axios";
-import { InputEvent, useState } from "react";
-import { PokemonBase } from "types/pokemon";
+import { Autocomplete, Box, Button, Grid, TextField, InputAdornment } from "@mui/material";
+import { SyntheticEvent, useState } from "react";
+import { PokeapiClient } from "../lib/pokeapiClient";
 
 export const Search: React.FC<{ addCallback: (id: number) => void }> = ({ addCallback }) => {
-    const [suggestions, setSuggestions] = useState<PokemonBase[]>([]);
+    const [suggestions, setSuggestions] = useState<{ label: string, id: number }[]>([]);
     const [input, setInput] = useState("");
     const [timeoutId, setTimeoutId] = useState<number | null>(null);
 
     const fetchSuggestions = async () => {
-        setSuggestions((await searchPokemonByName(input)) ?? []);
+        const suggestions = await searchPokemonByName(input);
+        setSuggestions(suggestions?.map(p => ({ label: p.name, id: p.id })) ?? []);
     }
 
-    const searchPokemonByName = async (name: string) => {
-        try {
-            const response = await axios.get<{ pokemon: PokemonBase[] }>(`/pokemon?query=${name}`);
-            if(response.status === 200) {
-                return response.data.pokemon;
-            }
-        }
-        catch(e) {
-            return null;
-        }
-    }
+    const searchPokemonByName = (name: string) => new PokeapiClient().searchPokemonByName(name);
 
     const startTimeout = () => {
         setSuggestions([]);
@@ -30,15 +21,16 @@ export const Search: React.FC<{ addCallback: (id: number) => void }> = ({ addCal
         }
         const newTimeoutId = setTimeout(() => {
             fetchSuggestions();
-        }, 2000);
+        }, 1000);
         setTimeoutId(newTimeoutId);
     }
 
     const handleAdd = async () => {
         if(!input) return;
-        let pokemon = suggestions.find(suggestion => suggestion.name.toLowerCase() === input.toLowerCase());
+        let pokemon = suggestions.find(suggestion => suggestion.label.toLowerCase() === input.toLowerCase());
         if(!pokemon) {
-            pokemon = (await searchPokemonByName(input))?.[0];
+            const search = await searchPokemonByName(input);
+            if(search) pokemon = { label: search[0].name, id: search[0].id };
         }
         if(pokemon) {
             addCallback(pokemon.id);
@@ -47,24 +39,25 @@ export const Search: React.FC<{ addCallback: (id: number) => void }> = ({ addCal
         }
     }
 
-    const inputAllowsSuggestionChange = (e: InputEvent<HTMLInputElement>) => {
-        return e.nativeEvent.inputType === 'insertText';
+    const handleInput = (_: SyntheticEvent, value: string, reason: string) => {
+        setInput(value);
+        if(reason === 'input') startTimeout();
     }
 
     return(
-        <div className="input-group mb-3 w-100">
-            <input onInput={(e) => {
-                setInput(e.currentTarget.value);
-                if(inputAllowsSuggestionChange(e)) startTimeout();
-            }} value={input} className="form-control" list="datalistOptions" placeholder="Type to search..." />
-            <datalist id="datalistOptions">
-                {
-                    suggestions.map((suggestion, index) => (
-                        <option key={`suggestion-${index}`} value={suggestion.name} />
-                    ))
-                }
-            </datalist>
-            <button onClick={() => handleAdd()} className="btn btn-outline-primary" type="button">Add</button>
-        </div>
+        <Grid container spacing={2}>
+            <Grid offset={ { xs: 0, lg: 2 } } size={ { xs: 12, lg: 8 } }>
+                <Box sx={ { display: 'flex', justifyContent: 'center', alignItems: 'stretch' } }>
+                    <Autocomplete
+                        fullWidth
+                        filterOptions={x => x}
+                        options={suggestions}
+                        inputValue={input}
+                        onInputChange={handleInput}
+                        renderInput={(params) => <TextField {...params} label="pokemon" />} />
+                    <Button sx={ { ml: 4 } } variant="outlined" onClick={handleAdd}>Add</Button>
+                </Box>
+            </Grid>
+        </Grid>
     );
 }

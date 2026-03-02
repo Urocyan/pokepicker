@@ -1,65 +1,40 @@
 import { PropsWithChildren, useEffect, useState } from "react";
-import axios from "axios";
 import { PokemonType } from "./pokemonType";
-import { PokemonTypes } from "types/pokemon_types";
+import { PokeapiClient, Pokemon } from "../../lib/pokeapiClient";
+import { Box, Card, CardContent, CardMedia, CircularProgress, Typography } from "@mui/material";
 
 interface PokemonCardProps extends PropsWithChildren {
     id: number;
 }
 
-interface Pokemon {
-    name: string,
-    pokemontypes: {
-      type: {
-        name: PokemonTypes
-      },
-      slot: number
-    }[],
-    pokemonsprites: {
-        frontDefault: string,
-        backDefault: string
-    }[]
-}
+const fetchPokemon = (id: number) => new PokeapiClient().getPokemonById(id);
 
-const fetchPokemon = async (id: number) => {
-    try {
-        const response = await axios.get<Pokemon>(`/pokemon/${id}`);
-        if(response.status === 200) {
-            return response.data;
-        }
-    }
-    catch(e) {
-        console.log((e as any).message);
-    }
-    return null;
-}
-
-const Spinner = () => <div className="w-100 d-flex justify-content-center align-items-center">
-    <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
-    </div>
-</div>;
+const Spinner = () => <Box sx={ { width: '100%', p: 8 } }>
+    <CircularProgress />
+</Box>;
 
 const PokemonCardContent = ({ pokemon }: { pokemon: Pokemon | null }) => {
     if(!pokemon) {
         return(
-        <div className="card-body">
-            <h5 className="card-title">Pokemon not found</h5>
-        </div>
+            <CardContent>
+                <Typography variant="h5" component="div">Pokemon not found</Typography>
+            </CardContent>
         );
     }
     
     return(
     <>
-        <img src={pokemon.pokemonsprites[0].frontDefault} className="card-img-top" alt={pokemon?.name} />
-        <div className="card-body">
-            <h5 className="card-title">{pokemon.name}</h5>
+        <CardMedia component='img' image={pokemon.pokemonsprites[0].frontDefault} title={pokemon.name} sx={ { width: '100%', height: 'auto' } } />
+        <CardContent>
+            <Typography variant="h5" component="div">
+                {pokemon.name}
+            </Typography>
             {
                 pokemon.pokemontypes.map((pokemonType, index) => (
-                    <PokemonType key={`${pokemon.name}-type-${index}`} type={pokemonType.type.name} />
+                    <PokemonType sx={ { ml: index == 0 ? 0 : 1 } } key={`${pokemon.name}-type-${index}`} type={pokemonType.type.name} />
                 ))
             }
-        </div>
+        </CardContent>
     </>
     );
 }
@@ -80,8 +55,8 @@ export default ({ id }: PokemonCardProps) => {
     }, [id]);
 
     return(
-        <div className="card text-white bg-dark border-light mb-3">
+        <Card variant='outlined' sx={ { width: '100%' } }>
             { loading ? <Spinner /> : <PokemonCardContent pokemon={pokemon} /> }
-        </div>
+        </Card>
     );
 }
